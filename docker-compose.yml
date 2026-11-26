@@ -1,0 +1,20 @@
+services:
+  network-monitor:
+    build: .
+    container_name: network-monitor
+    network_mode: host
+    env_file: .env
+    environment:
+      DATABASE_URL: sqlite:////app/data/network-monitor.db
+    volumes:
+      - ./data:/app/data
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_RAW
+      - NET_ADMIN
+    security_opt:
+      - no-new-privileges:true
+    init: true
+    restart: unless-stopped
+    stop_grace_period: 180s

@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <meta name="description" content="Private network inventory, health monitoring, and alerts.">
+  <title>Signal · Network Monitor</title>
+  <link rel="stylesheet" href="/style.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js" crossorigin="anonymous"></script>
+  <script defer src="/app.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="Signal home">
+      <span class="brand-icon" aria-hidden="true">≋</span>
+      <span>signal<span class="brand-dot">.</span></span>
+      <span class="brand-label">NETWORK MONITOR</span>
+    </a>
+    <div class="header-actions">
+      <span id="connection" class="connection"><i></i> Connecting</span>
+      <a href="/docs" target="_blank" rel="noopener" class="quiet-link">API docs ↗</a>
+      <button id="theme-toggle" class="icon-button" type="button" aria-label="Toggle light or dark theme">◐</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-heading">
+      <div>
+        <div class="eyebrow">YOUR NETWORK, AT A GLANCE</div>
+        <h1>Network overview</h1>
+        <p class="subtitle">Know what’s connected. Notice what changes.</p>
+        <div class="network-context"><span aria-hidden="true">⌁</span><span id="network-name">Detecting network…</span><span id="network-subnet" class="mono muted"></span><span id="wifi-signal" class="muted"></span></div>
+      </div>
+      <div class="page-actions">
+        <button id="test-alert" type="button" class="button secondary">↗ Send test alert</button>
+        <button id="scan-button" type="button" class="button primary"><span aria-hidden="true">⌁</span> Scan now</button>
+      </div>
+    </section>
+
+    <div id="demo-banner" class="notice demo-notice" role="status" hidden><strong>DEMO MODE</strong> Synthetic devices and history · No LAN scanning · Alerts are simulated</div>
+    <section class="summary-grid" aria-label="Network summary">
+      <article class="metric"><div class="metric-top"><span>Total devices</span><span class="metric-icon">▦</span></div><strong id="total">—</strong><small>Active inventory</small></article>
+      <article class="metric"><div class="metric-top"><span>Online</span><span class="status-dot up"></span></div><strong id="online" class="text-green">—</strong><small>Responding to checks</small></article>
+      <article class="metric"><div class="metric-top"><span>Offline</span><span class="status-dot down"></span></div><strong id="offline">—</strong><small id="pending-label">After 3 missed pings</small></article>
+      <article class="metric"><div class="metric-top"><span>Unknown devices</span><span class="metric-icon amber">◇</span></div><strong id="unknown" class="text-amber">—</strong><small>Awaiting your approval</small></article>
+      <article class="metric"><div class="metric-top"><span>Average latency</span><span class="metric-icon">⌁</span></div><strong id="average-latency">—</strong><small>Online devices · milliseconds</small></article>
+    </section>
+
+    <div id="scan-error" class="notice error" role="alert" hidden></div>
+    <section class="workspace">
+      <section class="panel inventory">
+        <div class="panel-heading">
+          <div><h2>Device inventory <span id="device-count" class="count">0</span></h2><p>Your connected devices and their health.</p></div>
+          <a class="quiet-link export-link" href="/api/export/devices.csv">↓ Export CSV</a>
+        </div>
+        <div class="toolbar">
+          <label class="search-wrap"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="Search devices, IP, MAC…" aria-label="Search devices"></label>
+          <select id="status-filter" aria-label="Filter by health status"><option value="">All statuses</option><option value="up">Online</option><option value="down">Offline</option><option value="unknown">Pending check</option></select>
+          <select id="tag-filter" aria-label="Filter by tag"><option value="">All tags</option></select>
+          <select id="trust-filter" aria-label="Filter by trust"><option value="">Any trust</option><option value="true">Trusted</option><option value="false">Unknown</option></select>
+        </div>
+        <div class="table-scroll">
+          <table>
+            <thead><tr>
+              <th><button type="button" data-sort="name">Device <span>↕</span></button></th>
+              <th><button type="button" data-sort="ip">IP address <span>↕</span></button></th>
+              <th><button type="button" data-sort="mac">MAC / Vendor <span>↕</span></button></th>
+              <th><button type="button" data-sort="status">Status <span>↕</span></button></th>
+              <th><button type="button" data-sort="latency_ms">Latency <span>↕</span></button></th>
+              <th><button type="button" data-sort="uptime_24h">Uptime · 24h <span>↕</span></button></th>
+              <th><button type="button" data-sort="last_seen">Last seen <span>↕</span></button></th>
+            </tr></thead>
+            <tbody id="device-rows"></tbody>
+          </table>
+        </div>
+        <div id="empty-state" class="empty-state">
+          <div class="empty-symbol" aria-hidden="true">⌁</div>
+          <h3>Discovering your network</h3>
+          <p>Your devices will appear here after the first scan.</p>
+        </div>
+        <div class="panel-footer"><span><span class="tiny-dot"></span> Checks run in the background</span><span id="updated-at">Waiting for first update</span></div>
+      </section>
+
+      <aside class="panel activity">
+        <div class="panel-heading"><div><h2>Activity feed</h2><p>The latest across your network.</p></div><span class="live-label">LIVE</span></div>
+        <div id="event-list" class="event-list" aria-live="polite"><p class="event-empty">No events yet.</p></div>
+        <div class="activity-key"><span><i class="status-dot up"></i> Recovery</span><span><i class="status-dot down"></i> Outage</span><span><i class="status-dot unknown"></i> Discovery</span></div>
+      </aside>
+    </section>
+
+    <footer class="page-footer">
+      <span>◈ Private network only <span class="footer-divider">/</span> <span id="subnet-label">Detecting subnet…</span></span>
+      <span id="last-scan">No scans completed yet</span>
+      <span>Auto-refresh every 10s</span>
+    </footer>
+    <p class="footnote">Health is based on ICMP responses. Devices that block ping or sleep may appear offline. Uptime measures observed checks, not unmonitored time.</p>
+  </main>
+
+  <dialog id="device-dialog" aria-labelledby="detail-title">
+    <div class="dialog-header"><div><div class="eyebrow">DEVICE DETAILS</div><h2 id="detail-title">Device</h2><p id="detail-address" class="mono"></p></div><button id="close-detail" class="icon-button" type="button" aria-label="Close device details">✕</button></div>
+    <div class="dialog-body">
+      <div id="detail-meta" class="detail-meta"></div>
+      <div class="uptime-cards"><div><span>24h uptime</span><strong id="uptime-24h">—</strong></div><div><span>7d uptime</span><strong id="uptime-7d">—</strong></div><div><span>30d uptime</span><strong id="uptime-30d">—</strong></div></div>
+      <div class="chart-heading"><h3>Latency <span class="muted">/ milliseconds</span></h3><div class="range-toggle" role="group" aria-label="History range"><button type="button" data-range="1h">1h</button><button type="button" data-range="24h" class="selected">24h</button><button type="button" data-range="7d">7d</button></div></div>
+      <div class="chart-container"><canvas id="latency-chart" role="img" aria-label="Device latency history"></canvas><p id="chart-message" class="chart-message" hidden></p></div>
+      <div class="timeline-heading"><h3>Availability timeline</h3><span><i class="status-dot up"></i> Up <i class="status-dot down"></i> Missed ping <i class="status-dot unknown"></i> No data</span></div>
+      <div id="uptime-timeline" class="timeline" aria-label="Observed uptime timeline"></div>
+      <div class="timeline-labels"><span id="timeline-start">—</span><span>Now</span></div>
+      <p class="hint">Each segment summarizes observed checks; any missed ping marks it red. Gray means no observations.</p>
+      <form id="device-form">
+        <h3>Device settings</h3>
+        <div class="form-grid"><label>Friendly name<input id="friendly-name" maxlength="120" placeholder="e.g. Living room speaker"></label><label>Tags <span class="muted">(comma-separated)</span><input id="device-tags" maxlength="820" placeholder="e.g. phone, server"></label></div>
+        <div class="form-bottom"><label class="trust-control"><input id="device-trusted" type="checkbox"><span>Trusted device<small>Stop unknown-device reminders</small></span></label><button id="save-device" type="submit" class="button primary">Save changes</button></div>
+      </form>
+    </div>
+  </dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>
