@@ -1,11 +1,18 @@
 """Private-subnet security and discovery fallback tests."""
 
-from unittest.mock import patch
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 
-from app.scanner import DiscoveredDevice, DiscoveryError, discover, find_nmap_executable, normalize_mac, validate_subnet
+from app.scanner import (
+    DiscoveredDevice,
+    DiscoveryError,
+    discover,
+    find_nmap_executable,
+    normalize_mac,
+    validate_subnet,
+)
 
 
 @pytest.mark.parametrize("subnet", [

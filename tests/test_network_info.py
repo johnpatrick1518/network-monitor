@@ -3,7 +3,12 @@
 import subprocess
 from unittest.mock import patch
 
-from app.network_info import NetworkInfo, detect_network_info, parse_windows_wifi, run_network_command
+from app.network_info import (
+    NetworkInfo,
+    detect_network_info,
+    parse_windows_wifi,
+    run_network_command,
+)
 
 
 def test_windows_wifi_name_and_signal() -> None:

@@ -15,7 +15,15 @@ from app.database import get_db, iso_utc, utcnow
 from app.models import Device, Event, HealthSample
 from app.monitor import uptime_by_device
 from app.scheduler import MonitorService
-from app.schemas import AlertTestOut, DeviceOut, DevicePatch, EventOut, HistoryOut, ScanOut, SummaryOut
+from app.schemas import (
+    AlertTestOut,
+    DeviceOut,
+    DevicePatch,
+    EventOut,
+    HistoryOut,
+    ScanOut,
+    SummaryOut,
+)
 
 router = APIRouter(prefix="/api", tags=["Network monitor"])
 Database = Annotated[Session, Depends(get_db)]

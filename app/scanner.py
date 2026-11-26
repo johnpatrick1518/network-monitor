@@ -184,7 +184,7 @@ def discover(network: ipaddress.IPv4Network) -> list[DiscoveredDevice]:
         logger.warning("Offline OUI database unavailable; vendor fields will be empty.")
     with ThreadPoolExecutor(max_workers=16, thread_name_prefix="reverse-dns") as pool:
         names = pool.map(reverse_hostname, [device.ip for device in devices])
-        for device, hostname in zip(devices, names):
+        for device, hostname in zip(devices, names, strict=True):
             device.hostname = hostname
             if parser and device.mac:
                 device.vendor = parser.get_manuf_long(device.mac) or parser.get_manuf(device.mac)

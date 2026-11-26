@@ -1,5 +1,7 @@
 """Demo safety and deterministic simulation tests with every real adapter forbidden."""
 
+import os
+from collections.abc import Generator
 from datetime import datetime
 from unittest.mock import patch
 
@@ -12,6 +14,7 @@ from sqlalchemy.orm import Session, sessionmaker
 from app import main
 from app.alerts import AlertService
 from app.config import Settings
+from app.demo import main as launch_demo
 from app.demo_data import DEMO_SUBNET, demo_probe_devices, seed_demo
 from app.models import Device, Event, HealthSample
 from app.scheduler import MonitorService
@@ -114,7 +117,7 @@ def test_demo_lifespan_and_api(sessions: sessionmaker[Session], monkeypatch: pyt
     monkeypatch.setattr(main, "SessionLocal", sessions)
     monkeypatch.setattr(main, "engine", sessions.kw["bind"])
 
-    def override_db():
+    def override_db() -> Generator[Session, None, None]:
         """Share the isolated test database with API handlers."""
         with sessions() as session:
             yield session
@@ -137,3 +140,18 @@ def test_demo_lifespan_and_api(sessions: sessionmaker[Session], monkeypatch: pyt
                 assert client.post("/api/alerts/test").json()["status"] == "simulated"
     finally:
         main.app.dependency_overrides.clear()
+
+
+def test_demo_launcher_is_loopback_only(monkeypatch: pytest.MonkeyPatch) -> None:
+    """The quickstart generates temporary credentials without changing the real .env."""
+    monkeypatch.setattr("sys.argv", ["app.demo", "--port", "8123"])
+    with patch.dict(os.environ, {}), patch(
+        "app.demo.secrets.token_urlsafe", return_value="temporary-test-password"
+    ), patch("uvicorn.run") as run:
+        launch_demo()
+        assert os.environ["DEMO_MODE"] == "true"
+        assert os.environ["DASHBOARD_USERNAME"] == "demo"
+        assert os.environ["DASHBOARD_PASSWORD"] == "temporary-test-password"
+        run.assert_called_once_with(
+            "app.main:app", host="127.0.0.1", port=8123, workers=1
+        )

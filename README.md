@@ -316,6 +316,14 @@ The last example is for Bash/zsh; use `Invoke-RestMethod` or suitable JSON quoti
 
 ## Run tests
 
+Install development tools once:
+
+```bash
+python -m pip install -r requirements-dev.txt
+```
+
+Use your virtual environment's `python` (the full platform-specific paths below work without activating it).
+
 Windows:
 
 ```powershell
@@ -329,6 +337,14 @@ Linux/macOS:
 ```
 
 Tests use isolated in-memory SQLite databases, mocked discovery/delivery, and a disabled background scheduler. **They never scan your LAN or send real alerts.** Coverage includes uptime windows, no-data semantics, down/up debouncing, elapsed downtime, persistent cooldown, delivery backoff, Windows ping output, private-subnet refusal, Scapy fallback, authenticated endpoints, history aggregation, CSV safety, identity changes, and retention.
+
+Run the same quality gates as CI, using the venv interpreter:
+
+```bash
+python -m ruff check app tests
+```
+
+Set `DEMO_MODE=true` for CI-equivalent behavior (`$env:DEMO_MODE="true"` in PowerShell or `export DEMO_MODE=true` in Bash/zsh). Live-adapter unit tests explicitly select non-demo settings but mock I/O; an autouse guard blocks external socket connections and real subprocesses in every test. Only local event-loop IPC is permitted. Demo tests also assert that configured provider credentials never cause outbound delivery.
 
 ### Manual acceptance check
 
@@ -412,11 +428,16 @@ HTTP Basic Auth is **not encryption**. Native launch commands bind to loopback b
 
 ```text
 network-monitor/
+├── .github/
+│   └── workflows/
+│       └── ci.yml
 ├── app/
 │   ├── __init__.py
 │   ├── main.py
 │   ├── config.py
 │   ├── database.py
+│   ├── demo.py
+│   ├── demo_data.py
 │   ├── models.py
 │   ├── schemas.py
 │   ├── scanner.py
@@ -439,11 +460,23 @@ network-monitor/
 │   ├── test_alerts.py
 │   ├── test_scanner.py
 │   ├── test_api.py
+│   ├── test_demo.py
+│   ├── test_io_guard.py
 │   └── test_scheduler.py
+├── docs/
+│   ├── architecture.md
+│   └── images/
+│       ├── README.md
+│       ├── dashboard-placeholder.svg
+│       └── device-detail-placeholder.svg
 ├── requirements.txt
+├── requirements-dev.txt
+├── pyproject.toml
+├── LICENSE
 ├── Dockerfile
 ├── docker-compose.yml
 ├── .dockerignore
+├── .gitattributes
 ├── .env.example
 ├── .gitignore
 └── README.md
@@ -473,6 +506,6 @@ Future work:
 
 ## License and release workflow
 
-[MIT](LICENSE). Only publish sanitized screenshots and tracked source files; never add `.env`, databases, or logs. CI runs Ruff lint/format checks and pytest on pushes and pull requests with `DEMO_MODE=true`; it needs no network-scanning privileges or alert secrets. Dependency installation still requires a package registry connection.
+[MIT](LICENSE). Only publish sanitized screenshots and tracked source files; never add `.env`, databases, or logs. CI runs Ruff lint checks and pytest on pushes and pull requests with `DEMO_MODE=true`; it needs no network-scanning privileges or alert secrets. Dependency installation still requires a package registry connection.
 
 Use Conventional Commits (`feat:`, `fix:`, `test:`, `docs:`). The local `v1.0.0` tag identifies the first portfolio release. Publishing the repository/tag is a separate manual action; no GitHub repository or remote push is created by the application.
