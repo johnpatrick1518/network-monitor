@@ -27,9 +27,9 @@ Private-network monitoring with FastAPI, health charts, Telegram alerts, and saf
 ## Validation and publishing checklist
 
 - Local verification: Python 3.13 on Windows; Ruff passes; 78 pytest cases pass with `DEMO_MODE=true`.
-- The GitHub Actions matrix is configured but has not run on GitHub before publication.
+- The GitHub Actions matrix is configured; check the repository's Actions page for actual hosted results.
 - `LICENSE` is MIT; third-party dependencies retain their own licenses.
-- Replace `YOUR_GITHUB_USERNAME` in the README badge before publishing.
+- Repository and CI links target `https://github.com/johnpatrick1518/network-monitor`.
 - Replace the clearly labeled screenshot placeholders with sanitized demo captures.
 - Real `.env`, local databases, logs, virtual environments, and caches must remain untracked.
 - Conventional commits and the annotated local `v1.0.0` tag identify the release.

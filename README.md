@@ -2,10 +2,10 @@
 
 **Discover your private-network devices, track their health, and receive actionable alerts.**
 
-[![CI](https://github.com/YOUR_GITHUB_USERNAME/network-monitor/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_GITHUB_USERNAME/network-monitor/actions/workflows/ci.yml)
+[![CI](https://github.com/johnpatrick1518/network-monitor/actions/workflows/ci.yml/badge.svg)](https://github.com/johnpatrick1518/network-monitor/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-> Not published yet. Replace `YOUR_GITHUB_USERNAME` in the CI badge when choosing the GitHub repository owner. The badge reports real workflow status after pushing; it is not a claim that hosted CI has already run.
+> This is a locally run application, not a hosted monitoring service. The CI badge links to the repository's actual GitHub Actions results; public source code does not expose your local dashboard.
 
 ## Demo mode in 60 seconds
 
