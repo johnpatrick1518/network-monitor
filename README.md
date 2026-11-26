@@ -31,6 +31,8 @@ Open **<http://localhost:8000>**, sign in as **`demo`**, and use the temporary p
 
 The launcher enables `DEMO_MODE=true`, binds only to loopback, and generates a new random password for each run. It does not modify `.env`. A separate `data/demo.db` contains eight clearly labeled synthetic devices and seven days of synthetic history; your live database remains untouched. Existing demo edits persist across restarts.
 
+To reset an old demo and regenerate recent chart history, stop the app and remove only `data/demo.db` before launching it again. Never remove your live inventory database.
+
 Try filtering Unknown devices, renaming one, marking it Trusted, viewing 1h/24h/7d history, exporting CSV, and pressing **Send test alert**. A simulated printer cycles through outages and recovery as checks run every 10 seconds. Alerts exercise the normal persisted cooldown path but **never send Telegram messages or email**, even if real credentials exist in `.env`. Demo mode does not call Nmap, Scapy, DNS, system ping, or Wi-Fi metadata commands.
 
 To enable demo mode with your own Uvicorn command instead, set `DEMO_MODE=true` and configure dashboard credentials normally. `DEMO_DATABASE_URL` overrides `DATABASE_URL` while demo mode is enabled; do not point it at an existing live database.
@@ -465,6 +467,7 @@ network-monitor/
 │   └── test_scheduler.py
 ├── docs/
 │   ├── architecture.md
+│   ├── portfolio.md
 │   └── images/
 │       ├── README.md
 │       ├── dashboard-placeholder.svg
@@ -509,3 +512,5 @@ Future work:
 [MIT](LICENSE). Only publish sanitized screenshots and tracked source files; never add `.env`, databases, or logs. CI runs Ruff lint checks and pytest on pushes and pull requests with `DEMO_MODE=true`; it needs no network-scanning privileges or alert secrets. Dependency installation still requires a package registry connection.
 
 Use Conventional Commits (`feat:`, `fix:`, `test:`, `docs:`). The local `v1.0.0` tag identifies the first portfolio release. Publishing the repository/tag is a separate manual action; no GitHub repository or remote push is created by the application.
+
+See [portfolio notes](docs/portfolio.md) for a suggested repository description, topic tags, resume bullets, and interview discussion prompts. Local verification covers Ruff and 78 tests on Windows/Python 3.13; the configured GitHub matrix is not a claim of remote results before publication.

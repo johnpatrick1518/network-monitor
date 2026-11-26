@@ -1,4 +1,4 @@
-"""Deterministic synthetic inventory and health observations; never performs I/O."""
+"""Deterministic synthetic inventory and health observations; never accesses the network."""
 
 import math
 from datetime import datetime, timedelta
