@@ -80,11 +80,11 @@ See [docs/architecture.md](docs/architecture.md) for the data flow, transaction 
 
 ## Screenshots
 
-![Dashboard screenshot placeholder](docs/images/dashboard-placeholder.svg)
+![Demo dashboard with eight devices, health summaries, and an activity feed](docs/images/dashboard.png)
 
-![Device detail screenshot placeholder](docs/images/device-detail-placeholder.svg)
+![Device detail showing seven-day latency history, uptime, and device settings](docs/images/device-detail.png)
 
-These are deliberately labeled placeholders, not screenshots. Capture **demo mode** before publishing images so your real IP/MAC inventory, SSID, Telegram chat, and credentials are not exposed. See [screenshot instructions](docs/images/README.md). Real monitoring mode never injects demo devices.
+These are actual browser screenshots of **demo mode**, not mockups. Devices, addresses, history, and Wi-Fi identity are synthetic; no real network inventory or credentials are shown. See [capture details and reproduction instructions](docs/images/README.md). Real monitoring mode never injects demo devices.
 
 ## Prerequisites
 
@@ -470,10 +470,13 @@ network-monitor/
 │   ├── portfolio.md
 │   └── images/
 │       ├── README.md
-│       ├── dashboard-placeholder.svg
-│       └── device-detail-placeholder.svg
+│       ├── dashboard.png
+│       └── device-detail.png
+├── scripts/
+│   └── capture_screenshots.py
 ├── requirements.txt
 ├── requirements-dev.txt
+├── requirements-screenshots.txt
 ├── pyproject.toml
 ├── LICENSE
 ├── Dockerfile

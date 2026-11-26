@@ -30,7 +30,7 @@ Private-network monitoring with FastAPI, health charts, Telegram alerts, and saf
 - The GitHub Actions matrix is configured; check the repository's Actions page for actual hosted results.
 - `LICENSE` is MIT; third-party dependencies retain their own licenses.
 - Repository and CI links target `https://github.com/johnpatrick1518/network-monitor`.
-- Replace the clearly labeled screenshot placeholders with sanitized demo captures.
+- README screenshots are actual browser captures of synthetic demo data; regenerate them with `scripts/capture_screenshots.py` after visible UI changes.
 - Real `.env`, local databases, logs, virtual environments, and caches must remain untracked.
 - Conventional commits and the annotated local `v1.0.0` tag identify the release.
 - No remote repository creation, push, hosted deployment, or GitHub Release is implied by the local tag.
